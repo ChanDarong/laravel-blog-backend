@@ -29,11 +29,23 @@ import {
   Sparkles,
 } from 'lucide-vue-next';
 
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore()
+const router = useRouter()
+
 const props = defineProps({
   user: { type: Object, required: true },
 });
 
 const { isMobile } = useSidebar();
+
+const logout = async () => {
+  await authStore.logout()
+  router.push({ name: 'login' })
+}
+
 </script>
 
 <template>
@@ -50,8 +62,8 @@ const { isMobile } = useSidebar();
               <AvatarFallback class="rounded-lg"> CN </AvatarFallback>
             </Avatar>
             <div class="grid flex-1 text-left text-sm leading-tight">
-              <span class="truncate font-medium">{{ user.name }}</span>
-              <span class="truncate text-xs">{{ user.email }}</span>
+              <span class="truncate font-medium">{{ authStore.user?.name }}</span>
+              <span class="truncate text-xs">{{ authStore.user?.email }}</span>
             </div>
             <ChevronsUpDown class="ml-auto size-4" />
           </SidebarMenuButton>
@@ -65,12 +77,12 @@ const { isMobile } = useSidebar();
           <DropdownMenuLabel class="p-0 font-normal">
             <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar class="h-8 w-8 rounded-lg">
-                <AvatarImage :src="user.avatar" :alt="user.name" />
+                <AvatarImage :src="user.avatar" :alt="authStore.user?.name" />
                 <AvatarFallback class="rounded-lg"> CN </AvatarFallback>
               </Avatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ user.name }}</span>
-                <span class="truncate text-xs">{{ user.email }}</span>
+                <span class="truncate font-semibold">{{ authStore.user?.name }}</span>
+                <span class="truncate text-xs">{{ authStore.user?.email }}</span>
               </div>
             </div>
           </DropdownMenuLabel>
@@ -97,7 +109,7 @@ const { isMobile } = useSidebar();
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem @click="logout">
             <LogOut />
             Log out
           </DropdownMenuItem>
